@@ -35,7 +35,7 @@ const Event = ({route, navigation}: any) => {
   <View style={{backgroundColor: "white", paddingVertical: "2%"}}>
     <View style={{paddingHorizontal: "3%"}}>
       <Text style={{fontSize:20}}>{event.name}</Text>
-      <Text style={{fontSize:16}}>{`${event.location}, ${dayjs(event.date).format("DD-MM-YYYY")}`}</Text>
+      <Text style={{fontSize:16}} onPress={()=> navigation.navigate("EventsByLocation", {location: event.location})}>{`${event.location}, ${dayjs(event.date).format("DD-MM-YYYY")}`}</Text>
     </View>    
       {event.images.length <= 0 ? (
         <Image

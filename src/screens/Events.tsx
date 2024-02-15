@@ -136,7 +136,7 @@ const Events = ({navigation}: any) => {
       <FlatList
         ListHeaderComponent={
         <>
-        
+        <Button onPress={() => navigation.navigate("PastEvents")}>See past events</Button>
         <View style={{backgroundColor: "white", padding: "2%", borderRadius: 10, height: 250, marginVertical: 10}}>
         <Text style={{fontSize: 20, fontWeight: "bold"}}>Popular Events</Text>
         <Carousel
