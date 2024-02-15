@@ -1,4 +1,4 @@
-package com.reactnativebootcampproject
+package com.reactnativeproject
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,15 +1,19 @@
-import { View, FlatList, ScrollView } from 'react-native'
+import { View, FlatList, Dimensions, Image, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { Card, Text, Searchbar, RadioButton, Button, IconButton } from 'react-native-paper'
-import { eventList } from '../data/events'
+import { defaultImg, eventList } from '../data/events'
+import { Drawer } from 'react-native-drawer-layout';
 import DatePicker from 'react-native-date-picker'
+import Carousel from 'react-native-reanimated-carousel';
 import dayjs from 'dayjs'
 import 'dayjs/locale/tr'
 const cities = [...new Set(eventList.map(i => i.location))];
 const eventTypes = [...new Set(eventList.map(i => i.type))];
 
 const Events = ({navigation}: any) => {
-  dayjs.locale('tr')
+  const width = Dimensions.get('window').width;
+  dayjs.locale('tr');
+  
   const [events, setEvents] = useState(eventList);
   const [value, setValue] = useState("");
   const [value2, setValue2] = useState("");
@@ -42,31 +46,21 @@ const Events = ({navigation}: any) => {
   function searchByDate() {
     console.log(startDate)
     console.log(endDate)
-    let startDateWithFormat = dayjs(startDate).format("DD-MM-YYYY")
-    console.log(startDateWithFormat)
-    let endDateWithFormat = dayjs(endDate).format("DD-MM-YYYY")
-    console.log(endDateWithFormat)
-    console.log(dayjs("21-02-2024", "DD-MM-YYYY"));
-    console.log(dayjs(new Date('21-02-2024'), "DD-MM-YYYY").isAfter(startDateWithFormat))
-    let filteredEvents = eventList.filter(item => dayjs(item.date, "DD-MM-YYYY").isAfter(startDateWithFormat) && dayjs(item.date, "DD-MM-YYYY").isBefore(endDateWithFormat))
+    let filteredEvents = eventList.filter(item => dayjs(item.date, "DD-MM-YYYY").isAfter(dayjs(startDate, "DD-MM-YYYY")) && dayjs(item.date, "DD-MM-YYYY").isBefore(dayjs(endDate, "DD-MM-YYYY")))
     console.log(filteredEvents)
-    setEvents(filteredEvents)                
+    setEvents(filteredEvents) 
   }
 
   return (
-    <View style={{padding: "3%"}}>
-      <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingBottom: '2%'}}>
-        <IconButton size={32} icon='menu' onPress={()=> setOpenSidebar(!openSidebar)}/>
-        <Searchbar
-        value={searchText}
-        placeholder="Search"
-        onChangeText={text => searchByName(text)}
-        style={{backgroundColor: "white", flex: 1}}  
-        />
-      </View>
-      <ScrollView style={{display: openSidebar ? 'flex': 'none', position: "absolute", top: 0, left: 0, zIndex: 1, backgroundColor: "white", padding: 10, width: '70%', height: '100%'}}>
+    <Drawer
+      open={openSidebar}
+      onOpen={() => setOpenSidebar(true)}
+      onClose={() => setOpenSidebar(false)}
+      renderDrawerContent={() => {
+        return (
+        <View style={{ padding: "2%"}} >
         <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{fontSize: 24}}>Filtreler</Text>
+          <Text style={{fontSize: 22}}>Filtreler</Text>
           <IconButton size={32} icon='close' onPress={()=> setOpenSidebar(!openSidebar)}/>
         </View>
         <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
@@ -123,19 +117,64 @@ const Events = ({navigation}: any) => {
           <Button mode="contained-tonal" onPress={() => setEvents(eventList)}>Temizle</Button>
           <Button onPress={() => searchByDate()} mode="contained">Ara</Button> 
         </View>
-      </ScrollView>
+        </View>
+        );
+      }}
+    >
+      <View style={{padding: "3%"}}>
+      <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingBottom: '2%'}}>
+        <IconButton size={32} icon='menu' onPress={()=> setOpenSidebar(!openSidebar)}/>
+        <Searchbar
+        value={searchText}
+        placeholder="Search"
+        onChangeText={text => searchByName(text)}
+        style={{backgroundColor: "white", flex: 1}}  
+        />
+      </View>
+      
+      
       <FlatList
+        ListHeaderComponent={
+        <>
+        
+        <View style={{backgroundColor: "white", padding: "2%", borderRadius: 10, height: 250, marginVertical: 10}}>
+        <Text style={{fontSize: 20, fontWeight: "bold"}}>Popular Events</Text>
+        <Carousel
+        loop={true}
+        pagingEnabled={true}
+        width={width}
+        height={200}
+        autoPlay={true}
+        autoPlayInterval={2000}
+        data={events}
+        scrollAnimationDuration={1000}
+        onSnapToItem={(index) => console.log('current index:', index)}
+        renderItem={({ index }) => (
+          <Pressable onPress={() => navigation.navigate("Event", {event: events[index]})}>
+          <Image    
+            style={{height: 150, width: "90%", borderRadius: 5, marginTop: 10}}
+            source={{
+            uri: events[index].images.length == 0 ? defaultImg : events[index].images[0],
+            }}
+          />   
+          <Text style={{ fontSize: 18,  marginTop: 10 }}>{events[index].name}</Text>
+          </Pressable>       
+        )}
+        />
+        </View>
+        </>}
+        showsVerticalScrollIndicator={false}
         data={events}
         renderItem={({item}) =>
           <>
           <Card onPress={() => navigation.navigate("Event", {event: item})}
           key={item.id}
           style={{marginTop: 10, marginBottom: 5, backgroundColor: "white"}}>
-            <Card.Cover style={{margin: 10}}source={{ uri: item.images[0]}}/>
+            <Card.Cover style={{margin: 10}}source={{ uri: item.images.length == 0 ? defaultImg : item.images[0]}}/>
             <Card.Title
             title={item.name}
-            titleStyle={{fontSize: 22}}
-            subtitle={`${item.location}, ${item.date}`}
+            titleStyle={{fontSize: 20}}
+            subtitle={`${item.location}, ${dayjs(item.date).format("DD-MM-YYYY")}`}
             subtitleStyle={{fontSize:16}}
             />
             <Card.Content style={{marginTop: 5}}>
@@ -146,6 +185,8 @@ const Events = ({navigation}: any) => {
         }
       /> 
     </View>
+    </Drawer>
+        
   )
 }
 
