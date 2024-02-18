@@ -1,28 +1,29 @@
 import { View, FlatList, Dimensions, Image, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { Card, Text, Searchbar, RadioButton, Button, IconButton } from 'react-native-paper'
+import { Card, Text, Searchbar, Button, IconButton } from 'react-native-paper'
 import { defaultImg, eventList } from '../data/events'
 import { Drawer } from 'react-native-drawer-layout';
 import DatePicker from 'react-native-date-picker'
 import Carousel from 'react-native-reanimated-carousel';
 import dayjs from 'dayjs'
 import 'dayjs/locale/tr'
-const cities = [...new Set(eventList.map(i => i.location))];
-const eventTypes = [...new Set(eventList.map(i => i.type))];
+import RNPickerSelect from 'react-native-picker-select'
+const citySet = [...new Set(eventList.map(i => i.location))];
+const typeSet = [...new Set(eventList.map(i => i.type))];
 
 const Events = ({navigation}: any) => {
   const width = Dimensions.get('window').width;
   dayjs.locale('tr');
   
   const [events, setEvents] = useState(eventList);
-  const [value, setValue] = useState("");
-  const [value2, setValue2] = useState("");
+  const [cities, setCities] = useState("");
+  const [types, setTypes] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [startDate, setStartDate] = useState(new Date())
+  const [startDate, setStartDate] = useState<Date | null>()
+  const [endDate, setEndDate] = useState<Date | null>()
   const [openSidebar, setOpenSidebar] = useState(false)
-  const [open, setOpen] = useState(false)
-  const [endDate, setendDate] = useState(new Date())
-  const [open2, setOpen2] = useState(false)
+  const [open, setOpen] = useState(false) // for start date modal
+  const [open2, setOpen2] = useState(false) // for end date modal
 
   function searchByName(text: string) {
     text = text.trim().toLocaleLowerCase();
@@ -31,24 +32,20 @@ const Events = ({navigation}: any) => {
     setEvents(filtered)
   }
 
-  function searchByCity(text: string) {
-    setValue2(text)
-    let filtered = eventList.filter(i => i.location == text)
-    setEvents(filtered)
-  }
-
-  function searchByType(text: string) {
-    setValue(text)
-    let filtered = eventList.filter(i => i.type == text)
-    setEvents(filtered)
-  }
-
-  function searchByDate() {
-    console.log(startDate)
-    console.log(endDate)
-    let filteredEvents = eventList.filter(item => dayjs(item.date, "DD-MM-YYYY").isAfter(dayjs(startDate, "DD-MM-YYYY")) && dayjs(item.date, "DD-MM-YYYY").isBefore(dayjs(endDate, "DD-MM-YYYY")))
-    console.log(filteredEvents)
+  function filterEvents() {
+    let filteredEvents = eventList.filter(item => 
+    (startDate ? dayjs(item.date, "DD-MM-YYYY").isAfter(dayjs(startDate, "DD-MM-YYYY")) : 1)
+    && (endDate ? dayjs(item.date, "DD-MM-YYYY").isBefore(dayjs(endDate, "DD-MM-YYYY")) : 1)
+    && (cities ? item.location === cities : 1) && (types ? item.type === types: 1))
     setEvents(filteredEvents) 
+  }
+
+  function clearFilters () {
+    setCities("")
+    setTypes("")
+    setStartDate(null)
+    setEndDate(null)
+    setEvents(eventList)
   }
 
   return (
@@ -64,13 +61,13 @@ const Events = ({navigation}: any) => {
           <IconButton size={32} icon='close' onPress={()=> setOpenSidebar(!openSidebar)}/>
         </View>
         <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
-          <Text>{dayjs(startDate).format('DD MMMM dddd')}</Text>
+          <Text>{startDate && dayjs(startDate).format('DD MMMM dddd')}</Text>
           <Button onPress={() => setOpen(true)} mode="outlined" style={{ marginBottom: '2%', marginLeft: 5, width: "45%" }}>
             Başlangıç
           </Button>
         </View>
         <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
-          <Text>{dayjs(endDate).format('DD MMMM dddd')}</Text>
+          <Text>{endDate && dayjs(endDate).format('DD MMMM dddd')}</Text>
           <Button onPress={() => setOpen2(true)} mode="outlined" style={{ marginBottom: '2%', marginLeft: 5, width: "45%" }}>
             Bitiş
           </Button>
@@ -78,7 +75,7 @@ const Events = ({navigation}: any) => {
         <DatePicker
           modal
           open={open}
-          date={startDate}
+          date={new Date()}
           onConfirm={(date: Date) => {
             setOpen(false)
             setStartDate(date)
@@ -91,31 +88,31 @@ const Events = ({navigation}: any) => {
         <DatePicker
           modal
           open={open2}
-          date={endDate}
+          date={new Date()}
           onConfirm={(date: Date) => {
             setOpen2(false)
-            setendDate(date)
+            setEndDate(date)
           }}
           onCancel={() => {
             setOpen2(false)
           }}
           mode="date"
         />
-        <Text>Cities</Text>
-        <RadioButton.Group onValueChange={value => searchByCity(value)} value={value2}>
-        {cities.map((city, index)=>
-        <RadioButton.Item  label={city} key={index} value={city} />
-        )}
-        </RadioButton.Group>
-        <Text>Type</Text>
-        <RadioButton.Group onValueChange={value => searchByType(value)} value={value}>
-        {eventTypes.map((type, index)=>
-        <RadioButton.Item  label={type} key={index} value={type} />
-        )}
-        </RadioButton.Group>
+        <RNPickerSelect
+        placeholder={{label: 'Select city', value: null}}
+        items={citySet.map( city => ({label: city, value: city}))}
+        onValueChange={(e) => setCities(e)}
+        value={cities}
+        />
+        <RNPickerSelect
+        placeholder={{label: 'Select type', value: null}}
+        items={typeSet.map( type => ({label: type, value: type}))}
+        onValueChange={(e) => setTypes(e)}
+        value={types}
+        />
         <View style={{display: 'flex', flexDirection: 'row', marginTop: "3%", justifyContent: 'flex-end', gap:5}}>
-          <Button mode="contained-tonal" onPress={() => setEvents(eventList)}>Temizle</Button>
-          <Button onPress={() => searchByDate()} mode="contained">Ara</Button> 
+          <Button mode="contained-tonal" onPress={() => clearFilters()}>Temizle</Button>
+          <Button onPress={() => filterEvents()} mode="contained">Ara</Button> 
         </View>
         </View>
         );
@@ -132,7 +129,6 @@ const Events = ({navigation}: any) => {
         />
       </View>
       
-      
       <FlatList
         ListHeaderComponent={
         <>
@@ -146,18 +142,18 @@ const Events = ({navigation}: any) => {
         height={200}
         autoPlay={true}
         autoPlayInterval={2000}
-        data={events}
+        data={eventList}
         scrollAnimationDuration={1000}
         onSnapToItem={(index) => console.log('current index:', index)}
         renderItem={({ index }) => (
-          <Pressable onPress={() => navigation.navigate("Event", {event: events[index]})}>
+          <Pressable onPress={() => navigation.navigate("Event", {event: eventList[index]})}>
           <Image    
             style={{height: 150, width: "90%", borderRadius: 5, marginTop: 10}}
             source={{
-            uri: events[index].images.length == 0 ? defaultImg : events[index].images[0],
+            uri: eventList[index].images.length == 0 ? defaultImg : eventList[index].images[0],
             }}
           />   
-          <Text style={{ fontSize: 18,  marginTop: 10 }}>{events[index].name}</Text>
+          <Text style={{ fontSize: 18,  marginTop: 10 }}>{eventList[index].name}</Text>
           </Pressable>       
         )}
         />
