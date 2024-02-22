@@ -1,14 +1,15 @@
-import { FlatList } from 'react-native'
-import React, {useState} from 'react'
+import { FlatList, View } from 'react-native'
+import React from 'react'
 import { defaultImg, pastEvents } from '../data/events';
 import { Card, Text, Button } from 'react-native-paper';
 import dayjs from 'dayjs';
 
 const PastEvents = ({navigation}: any) => {
   return (
+    <View style={{padding: "3%"}}>
     <FlatList
       ListHeaderComponent={
-      <Button onPress={() => navigation.navigate("Events")}>See events</Button>}
+      <Button onPress={() => navigation.navigate("Events")}>See current events</Button>}
         showsVerticalScrollIndicator={false}
         data={pastEvents}
         renderItem={({item}) =>
@@ -29,6 +30,7 @@ const PastEvents = ({navigation}: any) => {
           </Card>
           </>}
         />
+      </View>
   )
 }
 

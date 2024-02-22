@@ -27,13 +27,12 @@ const Events = ({navigation}: any) => {
 
   function searchByName(text: string) {
     text = text.trim().toLocaleLowerCase();
-    let filtered = eventList.filter(i => i.name.toLocaleLowerCase().includes(text))
     setSearchText(text)
-    setEvents(filtered)
+    filterEvents(text) // using text instead of searchtext due to async issues
   }
 
-  function filterEvents() {
-    let filteredEvents = eventList.filter(item => 
+  function filterEvents(text?: string) {
+    let filteredEvents = eventList.filter(item => (text ? item.name.toLocaleLowerCase().includes(text): 1) &&
     (startDate ? dayjs(item.date, "DD-MM-YYYY").isAfter(dayjs(startDate, "DD-MM-YYYY")) : 1)
     && (endDate ? dayjs(item.date, "DD-MM-YYYY").isBefore(dayjs(endDate, "DD-MM-YYYY")) : 1)
     && (cities ? item.location === cities : 1) && (types ? item.type === types: 1))
@@ -45,7 +44,8 @@ const Events = ({navigation}: any) => {
     setTypes("")
     setStartDate(null)
     setEndDate(null)
-    setEvents(eventList)
+    let filteredEvents = searchText ? eventList.filter(item => item.name.toLocaleLowerCase().includes(searchText)) : eventList
+    setEvents(filteredEvents)
   }
 
   return (
@@ -55,7 +55,7 @@ const Events = ({navigation}: any) => {
       onClose={() => setOpenSidebar(false)}
       renderDrawerContent={() => {
         return (
-        <View style={{ padding: "2%"}} >
+        <View style={{padding: "3%"}} >
         <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center'}}>
           <Text style={{fontSize: 22}}>Filtreler</Text>
           <IconButton size={32} icon='close' onPress={()=> setOpenSidebar(!openSidebar)}/>
@@ -75,7 +75,7 @@ const Events = ({navigation}: any) => {
         <DatePicker
           modal
           open={open}
-          date={new Date()}
+          date={startDate ? startDate : new Date()}
           onConfirm={(date: Date) => {
             setOpen(false)
             setStartDate(date)
@@ -88,7 +88,7 @@ const Events = ({navigation}: any) => {
         <DatePicker
           modal
           open={open2}
-          date={new Date()}
+          date={endDate ? endDate : new Date()}
           onConfirm={(date: Date) => {
             setOpen2(false)
             setEndDate(date)
@@ -112,7 +112,7 @@ const Events = ({navigation}: any) => {
         />
         <View style={{display: 'flex', flexDirection: 'row', marginTop: "3%", justifyContent: 'flex-end', gap:5}}>
           <Button mode="contained-tonal" onPress={() => clearFilters()}>Temizle</Button>
-          <Button onPress={() => filterEvents()} mode="contained">Ara</Button> 
+          <Button onPress={() => filterEvents(searchText)} mode="contained">Ara</Button> 
         </View>
         </View>
         );
@@ -132,7 +132,6 @@ const Events = ({navigation}: any) => {
       <FlatList
         ListHeaderComponent={
         <>
-        <Button onPress={() => navigation.navigate("PastEvents")}>See past events</Button>
         <View style={{backgroundColor: "white", padding: "2%", borderRadius: 10, height: 250, marginVertical: 10}}>
         <Text style={{fontSize: 20, fontWeight: "bold"}}>Popular Events</Text>
         <Carousel
@@ -157,6 +156,10 @@ const Events = ({navigation}: any) => {
           </Pressable>       
         )}
         />
+        </View>
+        <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+          <Text style={{fontSize: 20, fontWeight: "bold"}}>Events</Text>
+          <Button onPress={() => navigation.navigate("PastEvents")}>See past events</Button>
         </View>
         </>}
         showsVerticalScrollIndicator={false}
