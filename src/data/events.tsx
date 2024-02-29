@@ -8,6 +8,7 @@ export const allEvents = [
         description: '18 Şubat izmir Tarkan konseri',
         date: new Date("2024-02-18"),
         tickets: 200,
+        link: "https://www.biletix.com/anasayfa/TURKIYE/tr",
         images: ['https://img.freepik.com/free-photo/rear-view-large-group-music-fans-front-stage-during-music-concert-by-night-copy-space_637285-623.jpg','https://img.freepik.com/free-photo/light-beam-crowd-people_1409-7694.jpg']
     },
     {
@@ -18,6 +19,7 @@ export const allEvents = [
         description: '19 Şubat İstanbul Manga konseri',
         date: new Date("2024-02-19"),
         tickets: 0,
+        link: "https://www.biletix.com/anasayfa/TURKIYE/tr",
         images: ['https://img.freepik.com/free-photo/light-beam-crowd-people_1409-7694.jpg']
     },
     {
@@ -26,8 +28,9 @@ export const allEvents = [
         location: "İstanbul",
         type: "Konser",
         description: '21 şubat istanbul hadise konseri',
-        date: new Date("2024-02-21"),
+        date: new Date("2024-03-10"),
         tickets: 200,
+        link: "https://www.biletix.com/anasayfa/TURKIYE/tr",
         images: ['https://img.freepik.com/free-photo/rear-view-large-group-music-fans-front-stage-during-music-concert-by-night-copy-space_637285-623.jpg']
     },
     {
@@ -36,8 +39,9 @@ export const allEvents = [
         location: "Ankara",
         type: "Sergi",
         description: '23 şubat ankara resim sergisi',
-        date: new Date("2024-02-23"),
+        date: new Date("2024-03-12"),
         tickets: 0,
+        link: "https://www.biletix.com/anasayfa/TURKIYE/tr",
         images: ['https://img.freepik.com/free-vector/abstract-art-concept-illustration_114360-5605.jpg']
     },
     {
@@ -46,8 +50,9 @@ export const allEvents = [
         location: "İzmir",
         type: "Tiyatro",
         description: '24 şubat izmir tiyatro',
-        date: new Date("2024-02-24"),
+        date: new Date("2024-03-15"),
         tickets: 50,
+        link: "https://www.biletix.com/anasayfa/TURKIYE/tr",
         images: ['https://img.freepik.com/free-vector/theater-empty-stage-with-red-curtains-spotlights_107791-13513.jpg']
     },
     {
@@ -56,8 +61,9 @@ export const allEvents = [
         location: "İzmir",
         type: "Konser",
         description: '24 şubat izmir konser',
-        date: new Date("2024-02-24"),
+        date: new Date("2024-03-18"),
         tickets: 0,
+        link: "https://www.biletix.com/anasayfa/TURKIYE/tr",
         images: []
     }
 ]

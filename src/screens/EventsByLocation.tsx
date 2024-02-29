@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 const EventsByLocation = ({route, navigation}: any) => {
     const location = route.params.location;
     return (
-        <View style={{backgroundColor: "white", paddingHorizontal: "3%", paddingVertical: "2%"}}>
+        <View style={{paddingHorizontal: "3%", paddingVertical: "2%"}}>
         <Text style={{fontSize: 20, marginBottom: 10}}>Events In {location}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -15,7 +15,7 @@ const EventsByLocation = ({route, navigation}: any) => {
           renderItem={({item}) => {if (item.location == location) {
             return (
           <>
-            <Card onPress={() => navigation.navigate("Event", {event: item})}
+            <Card onPress={() => navigation.push("Event", {event: item})}
             key={item.id}
             style={{ marginBottom: 10, backgroundColor: "white"}}>
             <Card.Cover style={{margin: 10}} source={{ uri: item.images.length == 0 ? defaultImg : item.images[0]}}/>
@@ -25,9 +25,6 @@ const EventsByLocation = ({route, navigation}: any) => {
             subtitle={`${item.location}, ${dayjs(item.date).format("DD-MM-YYYY")}`}
             subtitleStyle={{fontSize:16}}
             />
-            <Card.Content style={{marginTop: 5}}>
-              <Text style={{fontSize: 16}} variant="bodyMedium">{item.description}</Text>
-            </Card.Content>
           </Card>
           </> )
         }

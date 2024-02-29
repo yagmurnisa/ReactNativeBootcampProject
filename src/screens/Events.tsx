@@ -128,7 +128,7 @@ const Events = ({navigation}: any) => {
         style={{backgroundColor: "white", flex: 1}}  
         />
       </View>
-      
+      {eventList.length > 0 ? (
       <FlatList
         ListHeaderComponent={
         <>
@@ -176,13 +176,12 @@ const Events = ({navigation}: any) => {
             subtitle={`${item.location}, ${dayjs(item.date).format("DD-MM-YYYY")}`}
             subtitleStyle={{fontSize:16}}
             />
-            <Card.Content style={{marginTop: 5}}>
-              <Text style={{fontSize: 16}} variant="bodyMedium">{item.description}</Text>
-            </Card.Content>
           </Card>
           </>
         }
-      /> 
+      /> ) : (
+        <Text style={{fontSize: 18, alignSelf: 'center', fontWeight: 'bold'}}>No events found</Text>
+      )}
     </View>
     </Drawer>
         

@@ -7,9 +7,10 @@ import dayjs from 'dayjs';
 const PastEvents = ({navigation}: any) => {
   return (
     <View style={{padding: "3%"}}>
+    {pastEvents.length > 0 ? (
     <FlatList
       ListHeaderComponent={
-      <Button onPress={() => navigation.navigate("Events")}>See current events</Button>}
+      <Button style={{alignSelf: "flex-start"}} onPress={() => navigation.navigate("Events")}>See current events</Button>}
         showsVerticalScrollIndicator={false}
         data={pastEvents}
         renderItem={({item}) =>
@@ -24,12 +25,11 @@ const PastEvents = ({navigation}: any) => {
             subtitle={`${item.location}, ${dayjs(item.date).format("DD-MM-YYYY")}`}
             subtitleStyle={{fontSize:16}}
             />
-            <Card.Content style={{marginTop: 5}}>
-              <Text style={{fontSize: 16}} variant="bodyMedium">{item.description}</Text>
-            </Card.Content>
           </Card>
           </>}
-        />
+    /> ) : (
+      <Text style={{fontSize: 18, alignSelf: 'center', fontWeight: 'bold'}}>No events found</Text>
+    )}
       </View>
   )
 }
